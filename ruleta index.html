@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>DBD Randomizador - Superviviente</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #121212;
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    .box {
+      background-color: #1e1e1e;
+      padding: 1rem;
+      border-radius: 10px;
+      max-width: 800px;
+      margin: auto;
+      box-shadow: 0 0 15px rgba(255,0,0,0.3);
+    }
+    .perk-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px;
+      text-align: left;
+      margin-top: 1rem;
+    }
+    .perk-item {
+      background-color: #292929;
+      border-radius: 8px;
+      padding: 0.5rem;
+      display: flex;
+      align-items: center;
+    }
+    .perk-item img {
+      width: 30px;
+      height: 30px;
+      margin-right: 10px;
+    }
+    button, select {
+      background-color: crimson;
+      border: none;
+      padding: 0.5rem 1rem;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎲 DBD Randomizador de Superviviente</h1>
+
+  <div class="box">
+    <h2>1. Marca las perks que tienes</h2>
+    <div>
+      <label><input type="checkbox" id="excluirLicencia"> Excluir perks de licencia</label>
+      <button onclick="guardarSeleccion()">Guardar selección</button>
+    </div>
+    <div class="perk-grid" id="perkList"></div>
+
+    <h2>2. Selecciona la dificultad</h2>
+    <select id="modo">
+      <option value="facil">Fácil (4 perks)</option>
+      <option value="normal">Normal (3 perks)</option>
+      <option value="experto">Experto (0 perks)</option>
+    </select>
+    <button onclick="generarBuild()">🎮 Generar Build</button>
+
+    <h2>🧩 Resultado</h2>
+    <div id="resultado"></div>
+  </div>
+
+  <script>
+    const perks = [
+      { nombre: "Sprint Burst", licencia: false, icono: "https://static.wikia.nocookie.net/deadbydaylight_gamepedia/images/0/0b/Sprint_Burst.gif" },
+      { nombre: "Dead Hard", licencia: false, icono: "https://static.wikia.nocookie.net/deadbydaylight_gamepedia/images/6/61/Dead_Hard.gif" },
+      { nombre: "Borrowed Time", licencia: true, icono: "https://static.wikia.nocookie.net/deadbydaylight_gamepedia/images/0/0f/Borrowed_Time.gif" },
+      { nombre: "Adrenaline", licencia: false, icono: "https://static.wikia.nocookie.net/deadbydaylight_gamepedia/images/b/b2/Adrenaline.gif" },
+      { nombre: "Decisive Strike", licencia: true, icono: "https://static.wikia.nocookie.net/deadbydaylight_gamepedia/images/7/75/Decisive_Strike.gif" },
+      { nombre: "Iron Will", licencia: false, icono: "https://static.wikia.nocookie.net/deadbydaylight_gamepedia/images/3/3e/Iron_Will.gif" },
+      { nombre: "Windows of Opportunity", licencia: false, icono: "https://static.wikia.nocookie.net/deadbydaylight_gamepedia/images/6/65/Windows_of_Opportunity.gif" },
+      { nombre: "Kindred", licencia: false, icono: "https://static.wikia.nocookie.net/deadbydaylight_gamepedia/images/1/1a/Kindred.gif" },
+      { nombre: "Unbreakable", licencia: false, icono: "https://static.wikia.nocookie.net/deadbydaylight_gamepedia/images/d/d2/Unbreakable.gif" },
+      { nombre: "Off the Record", licencia: false, icono: "https://static.wikia.nocookie.net/deadbydaylight_gamepedia/images/0/00/Off_the_Record.gif" }
+      // Puedes seguir agregando más aquí...
+    ];
+
+    const items = ["Botiquín", "Linterna", "Caja de herramientas", "Mapa", "Llave"];
+    const addons = ["Vendaje grueso", "Cinta médica", "Batería extra", "Mapa laminado", "Llave torcida"];
+    const offerings = ["Galleta de la suerte", "Shroud of Union", "Salty Lips", "Bloody Party Streamers"];
+
+    function cargarPerks() {
+      const contenedor = document.getElementById("perkList");
+      const guardadas = JSON.parse(localStorage.getItem("perksSeleccionadas") || "[]");
+
+      contenedor.innerHTML = perks.map((p, i) => `
+        <label class="perk-item">
+          <input type="checkbox" data-index="${i}" ${guardadas.includes(p.nombre) ? "checked" : ""}>
+          <img src="${p.icono}" alt="${p.nombre}">${p.nombre}
+        </label>
+      `).join("");
+    }
+
+    function guardarSeleccion() {
+      const checks = document.querySelectorAll("#perkList input[type='checkbox']");
+      const seleccionadas = [...checks].filter(c => c.checked).map(c => perks[c.dataset.index].nombre);
+      localStorage.setItem("perksSeleccionadas", JSON.stringify(seleccionadas));
+      alert("✅ Perks guardadas");
+    }
+
+    function getRandom(arr, count) {
+      const res = [];
+      const pool = [...arr];
+      while (res.length < count && pool.length) {
+        const i = Math.floor(Math.random() * pool.length);
+        res.push(pool.splice(i, 1)[0]);
+      }
+      return res;
+    }
+
+    function generarBuild() {
+      const modo = document.getElementById("modo").value;
+      const excluirLicencia = document.getElementById("excluirLicencia").checked;
+      const guardadas = JSON.parse(localStorage.getItem("perksSeleccionadas") || "[]");
+
+      let perksValidas = perks.filter(p => guardadas.includes(p.nombre));
+      if (excluirLicencia) perksValidas = perksValidas.filter(p => !p.licencia);
+
+      const cantidadPerks = modo === "facil" ? 4 : (modo === "normal" ? 3 : 0);
+      const perksFinal = getRandom(perksValidas, cantidadPerks);
+      const item = getRandom(items, 1)[0];
+      const addOn = getRandom(addons, 2);
+      const offering = getRandom(offerings, 1)[0];
+
+      document.getElementById("resultado").innerHTML = `
+        <h3>🎯 Perks (${cantidadPerks})</h3>
+        ${perksFinal.map(p => `<div><img src="${p.icono}" style="width:24px;vertical-align:middle"> ${p.nombre}</div>`).join('') || "<div>Ninguna</div>"}
+        <h3>🎒 Objeto</h3><div>${item}</div>
+        <h3>🛠️ Add-ons</h3><div>${addOn.join("<br>")}</div>
+        <h3>🎁 Ofrenda</h3><div>${offering}</div>
+      `;
+    }
+
+    window.onload = cargarPerks;
+  </script>
+</body>
+</html>
