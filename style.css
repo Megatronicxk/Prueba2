@@ -1,0 +1,58 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Roboto Condensed', sans-serif;
+  background-color: black;
+}
+
+#background-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  min-width: 100vw;
+  min-height: 100vh;
+  object-fit: cover;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 1;
+}
+
+.overlay {
+  position: relative;
+  z-index: 2;
+  color: white;
+  text-align: center;
+  padding: 2rem;
+}
+
+header h1 {
+  font-size: 2.5rem;
+  color: #c40000;
+  margin: 0;
+}
+
+header p {
+  color: #ccc;
+  margin-top: 0.5rem;
+}
+
+#generateBtn {
+  margin-top: 2rem;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  background-color: #c40000;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#generateBtn:hover {
+  background-color: #a00000;
+}
+
+.perks-container {
+  margin-top: 2rem;
+}
