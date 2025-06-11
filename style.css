@@ -1,0 +1,52 @@
+
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Roboto Condensed', sans-serif;
+  background-color: black;
+}
+
+.overlay {
+  position: relative;
+  z-index: 2;
+  color: white;
+  text-align: center;
+  padding: 2rem;
+}
+
+.hidden {
+  display: none;
+}
+
+.selectBtn {
+  font-size: 1.5rem;
+  padding: 1rem 2rem;
+  margin: 1rem;
+  background-color: #111;
+  color: #eee;
+  border: 2px solid crimson;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.selectBtn:hover {
+  background-color: crimson;
+  color: white;
+}
+
+.perk-item {
+  margin: 1rem auto;
+  font-size: 1.3rem;
+  background-color: rgba(0, 0, 0, 0.6);
+  border: 2px solid crimson;
+  padding: 1rem;
+  width: 80%;
+  max-width: 500px;
+  border-radius: 10px;
+}
+
+body.perkMode {
+  background: linear-gradient(to bottom right, #2a0000, #000);
+}

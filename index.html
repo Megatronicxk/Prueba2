@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DBD Perk Randomizer</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div class="overlay" id="startScreen">
+    <h1>Selecciona un tipo de Perk</h1>
+    <button class="selectBtn" onclick="startPerks('killer')">🎯 Perks de Killer</button>
+    <button class="selectBtn" onclick="startPerks('survivor')">🛡️ Perks de Survivor</button>
+  </div>
+
+  <div class="overlay hidden" id="perkScreen">
+    <h2 id="perkTitle"></h2>
+    <button id="generateBtn" onclick="generatePerks()">Generar Perks</button>
+    <div class="perks-container" id="perksContainer"></div>
+    <button onclick="goBack()">🔙 Volver</button>
+  </div>
+
+  <script>
+    const killerPerks = [
+      "Barbecue & Chili", "Hex: Ruin", "Scourge Hook: Pain Resonance",
+      "No One Escapes Death", "Jolt", "Corrupt Intervention"
+    ];
+
+    const survivorPerks = [
+      "Dead Hard", "Iron Will", "Decisive Strike",
+      "Borrowed Time", "Adrenaline", "Sprint Burst"
+    ];
+
+    let currentType = "";
+
+    function startPerks(type) {
+      currentType = type;
+      document.getElementById("startScreen").classList.add("hidden");
+      document.getElementById("perkScreen").classList.remove("hidden");
+      document.body.classList.add("perkMode");
+
+      document.getElementById("perkTitle").textContent =
+        type === "killer" ? "🎯 Perks de Killer" : "🛡️ Perks de Survivor";
+
+      generatePerks();
+    }
+
+    function generatePerks() {
+      const pool = currentType === "killer" ? killerPerks : survivorPerks;
+      const perks = [];
+
+      while (perks.length < 4) {
+        const random = pool[Math.floor(Math.random() * pool.length)];
+        if (!perks.includes(random)) perks.push(random);
+      }
+
+      const container = document.getElementById("perksContainer");
+      container.innerHTML = "";
+      perks.forEach(perk => {
+        const p = document.createElement("div");
+        p.textContent = perk;
+        p.className = "perk-item";
+        container.appendChild(p);
+      });
+    }
+
+    function goBack() {
+      document.getElementById("perkScreen").classList.add("hidden");
+      document.getElementById("startScreen").classList.remove("hidden");
+      document.body.classList.remove("perkMode");
+    }
+  </script>
+</body>
+</html>
